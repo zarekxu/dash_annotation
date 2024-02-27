@@ -37,6 +37,8 @@ app.layout = html.Div([
     ),
     html.Div(id='output-data-upload'),
     html.Div(id='scores-output'),  # Display scores here
+    html.Button('Show Scores List', id='show-scores-button', n_clicks=0, style={'margin': '10px'}),
+    html.Div(id='scores-list')
 ])
 
 # Callback to handle file upload and display scores
@@ -93,6 +95,23 @@ def display_scores(contents, scores):
         html.H3("Scores:"),
         dcc.Markdown("\n".join(score_list))
     ])
+
+# Callback to display scores list when button is clicked
+@app.callback(
+    Output('scores-list', 'children'),
+    [Input('show-scores-button', 'n_clicks')],
+    [State({'type': 'dropdown-score', 'index': 'all'}, 'value')]
+)
+def show_scores_list(n_clicks, scores):
+    if n_clicks == 0:
+        return []
+    
+    # Create a list to display scores
+    scores_list = html.Ul([
+        html.Li(f"Item {i+1}: {score}") for i, score in enumerate(scores)
+    ])
+    
+    return scores_list
 
 # Run the app
 if __name__ == '__main__':
