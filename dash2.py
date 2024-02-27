@@ -54,27 +54,26 @@ def update_output(contents, filename):
     decoded = base64.b64decode(content_string)
     df = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
 
-    # Create a table to display the items with dropdown for score selection
-    table = html.Table(
-        # Header
-        [html.Tr([html.Th('Item'), html.Th('Select Score')])] +
-        # Body with dropdown for each item
-        [html.Tr([
-            html.Td(html.Div(dcc.Markdown(df.iloc[i]['Item']))),  # Render Markdown
-            html.Td(
-                dcc.Dropdown(
-                    id={'type': 'dropdown-score', 'index': i},
-                    options=[
-                        {'label': str(score), 'value': score} for score in range(1, 6)
-                    ],
-                    value=3,  # Default value
-                    clearable=False
-                )
+    # Create a div to display items with numbering and horizontal lines
+    items_div = []
+    for i in range(len(df)):
+        item_number = i + 1
+        items_div.append(html.Div([
+            html.Hr(),  # Horizontal line
+            html.P(f"Item {item_number}:"),  # Item number
+            dcc.Markdown(df.iloc[i]['Item']),  # Render Markdown
+            html.P("Select Score:"),
+            dcc.Dropdown(
+                id={'type': 'dropdown-score', 'index': i},
+                options=[
+                    {'label': str(score), 'value': score} for score in range(1, 6)
+                ],
+                value=3,  # Default value
+                clearable=False
             )
-        ]) for i in range(len(df))]
-    )
+        ]))
 
-    return table
+    return items_div
 
 # Callback to save scores to TXT file
 @app.callback(
@@ -87,7 +86,7 @@ def save_scores_to_txt(n_clicks, scores):
         return []
 
     # Create a string to save scores
-    score_text = "\n".join([f"{df.iloc[i]['Item']}: {score}" for i, score in enumerate(scores)])
+    score_text = "\n".join([f"Item {i+1}: {score}" for i, score in enumerate(scores)])
 
     # Save the scores to a new TXT file
     with open('scores.txt', 'w') as f:
