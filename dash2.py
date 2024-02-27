@@ -11,6 +11,12 @@ CSV_FILE = 'sample_data_markdown.csv'
 # Read the CSV file into a DataFrame
 df = pd.read_csv(CSV_FILE)
 
+# Number of items
+num_items = len(df)
+
+# Initial dropdown values
+initial_dropdown_values = [3] * num_items
+
 # Dash app
 app = dash.Dash(__name__)
 
@@ -100,9 +106,9 @@ def display_scores(contents, scores):
 @app.callback(
     Output('scores-list', 'children'),
     [Input('show-scores-button', 'n_clicks')],
-    [State({'type': 'dropdown-score', 'index': 'all'}, 'value')]
+    [State({'type': 'dropdown-score', 'index': i}, 'value') for i in range(num_items)]
 )
-def show_scores_list(n_clicks, scores):
+def show_scores_list(n_clicks, *scores):
     if n_clicks == 0:
         return []
     
