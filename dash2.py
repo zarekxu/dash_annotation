@@ -36,8 +36,7 @@ app.layout = html.Div([
         multiple=False
     ),
     html.Div(id='output-data-upload'),
-    html.Button('Save Scores', id='save-button', n_clicks=0),
-    html.Div(id='save-status')
+    html.Div(id='scores-output'),  # Display scores here
 ])
 
 # Callback to handle file upload and display scores
@@ -75,24 +74,25 @@ def update_output(contents, filename):
 
     return items_div
 
-# Callback to save scores to TXT file
+# Callback to display scores
 @app.callback(
-    Output('save-status', 'children'),
-    [Input('save-button', 'n_clicks')],
+    Output('scores-output', 'children'),
+    [Input('upload-data', 'contents')],
     [State({'type': 'dropdown-score', 'index': 'all'}, 'value')]
 )
-def save_scores_to_txt(n_clicks, scores):
-    if n_clicks == 0:
+def display_scores(contents, scores):
+    if contents is None:
         return []
-
-    # Create a string to save scores
-    score_text = "\n".join([f"Item {i+1}: {score}" for i, score in enumerate(scores)])
-
-    # Save the scores to a new TXT file
-    with open('scores.txt', 'w') as f:
-        f.write(score_text)
-
-    return html.Div('Scores saved to scores.txt')
+    
+    # Create a string to display scores
+    score_list = [f"Item {i+1}: {score}" for i, score in enumerate(scores)]
+    score_text = "\n".join(score_list)
+    
+    return html.Div([
+        html.Hr(),  # Horizontal line
+        html.H3("Scores:"),
+        dcc.Markdown("\n".join(score_list))
+    ])
 
 # Run the app
 if __name__ == '__main__':
