@@ -1,0 +1,35 @@
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Assuming `content` is the message you want to display in the collapsible section
+    var content = "This is the content that will be shown or hidden.";
+
+    // Find the div where you want to add the collapsible content
+    var upperdiv = document.getElementById('upperdiv');
+
+    // Generate the HTML for the collapsible content
+    var collapsibleHTML = `
+        <div class="message">
+            <div class="appmessagediv" onclick="toggleCollapse(this)">
+                <div class="toggle">+</div>
+                <div class="appmessage" style="display: none;">${content}</div>
+            </div>
+        </div>
+    `;
+
+    // Add the new HTML content to the existing content of upperdiv
+    upperdiv.innerHTML += collapsibleHTML;
+});
+
+// Function to toggle the collapse
+function toggleCollapse(element) {
+    var contentDiv = element.querySelector(".appmessage");
+    var toggleDiv = element.querySelector(".toggle");
+    if (contentDiv.style.display === "none") {
+        contentDiv.style.display = "block";
+        toggleDiv.textContent = "-";
+    } else {
+        contentDiv.style.display = "none";
+        toggleDiv.textContent = "+";
+    }
+}
+</script>
