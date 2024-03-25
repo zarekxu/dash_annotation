@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #chatbox {
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            height: 300px;
+            overflow-y: scroll;
+        }
+        #userInput {
+            width: calc(100% - 110px);
+            padding: 10px;
+        }
+        #send {
+            padding: 10px;
+            width: 100px;
+        }
+    </style>
+</head>
+<body>
+    <div id="chatbox">
+        <p>Welcome to the Chatbot. What is your name?</p>
+    </div>
+    <input type="text" id="userInput" placeholder="Type your message here...">
+    <button id="send">Send</button>
+
+    <script>
+        document.getElementById("send").onclick = function() {
+            var inputElement = document.getElementById("userInput");
+            var message = inputElement.value;
+            inputElement.value = ""; // Clear input after sending
+
+            // Display user's message in chatbox
+            var chatbox = document.getElementById("chatbox");
+            var userMessage = document.createElement("p");
+            userMessage.style.color = "blue";
+            userMessage.textContent = "You: " + message;
+            chatbox.appendChild(userMessage);
+
+            // Send message to Flask server
+            fetch("/chat", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    user_id: "user123", // This should be dynamically generated or fetched in a real app
+                    message: message
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Display chatbot's response in chatbox
+                var botMessage = document.createElement("p");
+                botMessage.textContent = "Chatbot: " + data.message;
+                chatbox.appendChild(botMessage);
+                chatbox.scrollTop = chatbox.scrollHeight; // Scroll to the bottom
+            })
+            .catch(error => console.error("Error:", error));
+        };
+    </script>
+</body>
+</html>
