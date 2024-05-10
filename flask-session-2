@@ -1,0 +1,27 @@
+from flask import Flask, session, request, redirect, url_for
+
+app = Flask(__name__)
+app.secret_key = 'your_secret_key'
+app.config['SESSION_PERMANENT'] = False  # Make sure sessions are not permanent
+
+@app.route('/')
+def index():
+    # Display stored data or a message if nothing is stored
+    data = session.get('info', 'No data stored.')
+    return f"Stored data: {data}<br><a href='/input'>Input Data</a>"
+
+@app.route('/input', methods=['GET', 'POST'])
+def input_data():
+    if request.method == 'POST':
+        # Store the data in the session dictionary
+        session['info'] = request.form['data']
+        return redirect(url_for('index'))
+    return '''
+        <form method="post">
+            Data: <input type="text" name="data"><br>
+            <input type="submit" value="Submit">
+        </form>
+    '''
+
+if __name__ == '__main__':
+    app.run(debug=True)
