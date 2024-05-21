@@ -1,6 +1,6 @@
 import re
 
-def add_url_to_headers(file_path, url, output_path=None):
+def add_url_to_headers(file_path, base_url, output_path=None):
     # Read the file content
     with open(file_path, 'r') as file:
         content = file.read()
@@ -11,7 +11,10 @@ def add_url_to_headers(file_path, url, output_path=None):
 
     # Function to append URL to headers
     def append_url(match):
-        return f"{match.group(0)} [{url}]"
+        header = match.group(0).strip()
+        header_name = header.lstrip('# ').strip()
+        url = f"{base_url}/{header_name.replace(' ', '-').lower()}"
+        return f"{header}\n[{url}]"
 
     # Modify the content by appending the URL to headers
     modified_content = level1_pattern.sub(append_url, content)
@@ -28,8 +31,8 @@ def add_url_to_headers(file_path, url, output_path=None):
 # Example usage
 file_path = 'example.md'
 output_path = 'modified_example.md'  # Optional: if you want to save to a different file
-url = 'https://example.com'
+base_url = 'https://example.com'
 
-add_url_to_headers(file_path, url, output_path)
+add_url_to_headers(file_path, base_url, output_path)
 
 print(f"Headers in '{file_path}' have been updated with the URL and saved to '{output_path}'")
