@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page with FAQ Sidebar</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .content {
+            flex: 3;
+            padding: 20px;
+        }
+
+        .sidebar {
+            flex: 1;
+            background-color: #f4f4f4;
+            padding: 20px;
+            height: 100vh; /* Full height of the viewport */
+            overflow-y: auto; /* Enable scrolling if the sidebar is too long */
+        }
+
+        .faq h3 {
+            margin-top: 0;
+        }
+
+        .faq + .faq {
+            margin-top: 20px;
+        }
+    </style>
+
+</head>
+<body>
+    <div class="container">
+        <div class="content">
+            <h1>Main Content Area</h1>
+            <p>This is where your main content goes. It could be about anything you want.</p>
+        </div>
+        <div class="sidebar">
+            <h2>Frequently Asked Questions</h2>
+            <div class="faq">
+                <h3>What is your return policy?</h3>
+                <p>We accept returns within 30 days of purchase.</p>
+            </div>
+            <div class="faq">
+                <h3>How do I contact customer service?</h3>
+                <p>You can contact us via email at support@example.com or phone at (123) 456-7890.</p>
+            </div>
+            <!-- Add more FAQs as needed -->
+        </div>
+    </div>
+</body>
+</html>
