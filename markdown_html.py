@@ -3,28 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flask Markdown Renderer</title>
+    <title>Markdown to HTML</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        textarea {
+            width: 100%;
+            height: 200px;
+            margin-bottom: 20px;
+        }
+        .output {
+            border: 1px solid #ccc;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+    </style>
 </head>
 <body>
-    <h1>Markdown Renderer</h1>
-    <textarea id="markdown-input" rows="10" cols="50"># Hello Markdown!</textarea>
-    <div id="markdown-output"></div>
 
-    <!-- Include the Marked library -->
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script>
-        // Function to render Markdown
-        function renderMarkdown() {
-            const markdownText = document.getElementById('markdown-input').value;
-            const htmlContent = marked(markdownText);
-            document.getElementById('markdown-output').innerHTML = htmlContent;
-        }
+<h1>Markdown to HTML Converter</h1>
 
-        // Render Markdown on page load
-        renderMarkdown();
+<textarea id="markdownContent" placeholder="Type your Markdown content here..."></textarea>
+<br>
+<button onclick="convertMarkdown()">Convert to HTML</button>
 
-        // Optional: Render Markdown whenever the input changes
-        document.getElementById('markdown-input').addEventListener('input', renderMarkdown);
-    </script>
+<h2>Output:</h2>
+<div class="output" id="outputBox">
+    <!-- Rendered HTML will be displayed here -->
+</div>
+
+<script>
+    function convertMarkdown() {
+        const markdownContent = document.getElementById("markdownContent").value;
+        fetch("/render_markdown", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ message: markdownContent }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById("outputBox").innerHTML = data.rendered_html;
+        });
+    }
+</script>
+
 </body>
 </html>
