@@ -14,28 +14,27 @@ def _parse_losses(self, losses):
     # === Fast validation: copy log_vars from GPU 0 to GPU 1 ===
     if dist.is_available() and dist.is_initialized():
         rank = dist.get_rank()
-
-        # Convert log_vars to a CPU object
+    
         if rank == 0:
             obj_to_broadcast = {k: v.detach().cpu().item() for k, v in log_vars.items()}
         else:
             obj_to_broadcast = {}
-
-        # Prepare object list for broadcasting
+    
         obj_list = [obj_to_broadcast]
-
-        # Only broadcast from rank 0 to rank 1
-        if rank in [0, 1]:
-            dist.broadcast_object_list(obj_list, src=0)
-
-            # GPU 1 will override its local log_vars
-            if rank == 1:
-                log_vars = OrderedDict((k, torch.tensor(v, device=loss.device)) for k, v in obj_list[0].items())
-
-        # Reduce all values
+    
+        # All ranks participate
+        dist.broadcast_object_list(obj_list, src=0)
+    
+        # Non-rank-0 overwrites their log_vars with the broadcasted copy
+        if rank != 0:
+            log_vars = OrderedDict((k, torch.tensor(v, device=loss.device)) for k, v in obj_list[0].items())
+    
+        # Reduce loss values across all ranks
         for loss_name, loss_value in log_vars.items():
-            dist.all_reduce(loss_value.div_(dist.get_world_size()))
-            log_vars[loss_name] = loss_value.item()
+            val_tensor = torch.tensor(loss_value, device=loss.device) if not isinstance(loss_value, torch.Tensor) else loss_value
+            dist.all_reduce(val_tensor.div_(dist.get_world_size()))
+            log_vars[loss_name] = val_tensor.item()
+
 
     log_vars['loss'] = loss.item() if isinstance(loss, torch.Tensor) else loss
     return loss, log_vars
